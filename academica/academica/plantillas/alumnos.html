@@ -74,10 +74,10 @@
             alertify.error(`Error al procesar alumno: ${respuesta}`);
             return;
         }
-        limpiarFormulario();
+        limpiarAlumno();
         obtenerAlumnos();
     }
-    function limpiarFormulario(){
+    function limpiarAlumno(){
         accion = "nuevo";
         idAlumno = 0;
         txtCodigoAlumno.value = "";

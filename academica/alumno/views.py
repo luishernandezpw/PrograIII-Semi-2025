@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 import json
 from django.views.decorators.csrf import csrf_exempt
-from .models import alumno
+from .models import alumno, materia
 
 # Create your views here.
 def holaMundo(request):
@@ -23,6 +23,10 @@ def vistas(request, form):
 def consultar_alumnos(request):
     alumnos = list(alumno.objects.values())
     return JsonResponse(alumnos, safe=False)
+
+def consultar_materias(request):
+    materias = list(materia.objects.values())
+    return JsonResponse(materias, safe=False)
 
 @csrf_exempt
 def guardar_alumnos(request):
@@ -50,5 +54,30 @@ def guardar_alumnos(request):
             editAlumno.delete()
 
         return JsonResponse({'msg': 'ok', 'idAlumno': editAlumno.id})
+    else:
+        return JsonResponse({'msg': 'Metodo no permitido'})
+    
+@csrf_exempt
+def guardar_materias(request):
+    if request.method == "POST":
+        data  = json.loads(request.body)
+        if( data.get("accion")=="nuevo" ):
+            editMateria = materia.objects.create(
+                codigo = data.get("codigo"),
+                nombre = data.get("nombre"),
+                uv = data.get("uv")
+            )
+        elif( data.get("accion")=="modificar" ):
+            editMateria = materia.objects.get(id=data.get("idMateria"))
+            editMateria.codigo = data.get("codigo")
+            editMateria.nombre = data.get("nombre")
+            editMateria.uv = data.get("uv")
+            editMateria.save()
+
+        elif( data.get("accion")=="eliminar" ):
+            editMateria = materia.objects.get(id=data.get("idMateria"))
+            editMateria.delete()
+
+        return JsonResponse({'msg': 'ok', 'id': editMateria.id})
     else:
         return JsonResponse({'msg': 'Metodo no permitido'})
